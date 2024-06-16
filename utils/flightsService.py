@@ -1,20 +1,29 @@
-import pandas as pd
+from utils.translator import readTxt, toMinutes
 
 class Flights:
     def __init__(self):
-        self.fullDf = pd.read_csv('database/flights.txt',
-                             names=["from", "to", "departure", "arrival", "price"])
+        self.fullDf = readTxt('database/flights.txt', ["from", "to", "departure", "arrival", "price"])
         
-        self.fullDf["arrival"] = pd.to_datetime(self.fullDf["arrival"]).dt.hour * 60 + pd.to_datetime(self.fullDf["arrival"]).dt.minute
+        self.fullDf["arrivalInMin"] = toMinutes(self.fullDf, "arrival")
+        self.fullDf["departureInMin"] = toMinutes(self.fullDf, "departure")
 
-    def getFlightCost(self, locale, index):
-        return self.fullDf[self.fullDf["from"] == locale].iloc[index]["price"]
+    def getFlightCost(self, locale, index, column):
+        return self.fullDf[self.fullDf[column] == locale].iloc[index]["price"]
+    
+    def getFlightArrivalInMin(self, locale, index):
+        return self.fullDf[self.fullDf["from"] == locale].iloc[index]["arrivalInMin"]
+    
+    def getFlightDepartureInMin(self, locale, index):
+        return self.fullDf[self.fullDf["to"] == locale].iloc[index]["departureInMin"]
+    
+    def getFlightDeparture(self, locale, index):
+        return self.fullDf[self.fullDf["from"] == locale].iloc[index]["departure"]
     
     def getFlightArrival(self, locale, index):
         return self.fullDf[self.fullDf["from"] == locale].iloc[index]["arrival"]
     
-    def maxDFSize(self, locale):
-        return len(self.fullDf[self.fullDf["from"] == locale])
+    def maxDFSize(self, locale, column):
+        return len(self.fullDf[self.fullDf[column] == locale])
 
 
 
