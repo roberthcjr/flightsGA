@@ -1,18 +1,17 @@
 import random
 from gaProperties.individual import Individual
+from utils.splitter import splitDictBackward, splitDictFoward
 
 class GA:
 
     def __init__(self, flightService, kRatio):
         self.flightService = flightService
         self.kRatio = kRatio
+        self.population = []
     
     def bestIndividual(self, population):
-        best = population[0]
-        for individual in population:
-            if individual.fitness() < best.fitness():
-                best = individual
-        return best
+        populationSorted = sorted(population, key=lambda individual:individual.fitness())
+        return populationSorted[0]
     
     def createPopulation(self, locales, toRome, size=100):    
         if not callable(Individual):
@@ -21,14 +20,31 @@ class GA:
         if not locales:
             raise ValueError("O parâmetro `locales` não deve estar vazio.")
         
-        return [Individual(self.flightService, locales, toRome) for _ in range(size)]
+        self.population.append([Individual(self.flightService, locales, toRome) for _ in range(size)])
     
-    def newPopulation(self, locales, toRome):
-        newPopulation = []
-        father = self.tournament()
-        mother = self.tournament()
+    def newPopulation(self, population):
+        newPopulation = population[:]
+        father:Individual = self.tournament()
+        mother:Individual = self.tournament()
         while mother == father:
             father = self.tournament()
+
+        daughter, son = self.getChild(father, mother)
+
+        newPopulation.append([daughter, son])
+
+        self.population = newPopulation.sort(key=lambda individual:individual.fitness())[:len(self.population)]
+
+    def getChild(self, father:Individual, mother:Individual):
+        child1 = self.crossOver(father, mother)
+        child2 = self.crossOver(mother, father)
+
+        return child1, child2
+
+    def crossOver(self, individualA:Individual, individualB:Individual, genomeLen):
+        crossOverPosition = random.randint(0, genomeLen)
+        return splitDictFoward(individualA.localesIndexes, crossOverPosition) + splitDictBackward(individualB)
+    
 
     def tournament(self, population):
         competitor1 = population[random.randint(0, len(population) - 1)]
