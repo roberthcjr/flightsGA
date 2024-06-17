@@ -1,23 +1,21 @@
 import random
 
+# TODO: need some repairs, this class doesn't work right now
 class Individual:
+    def __init (self, flightIndexes):
+        self.flightIndexes = flightIndexes
+
     def __init__ (self, flightsService, locales, toRome):
         self.flightsService = flightsService
-        self.locales = locales
-        self.flightsTime = []
-        self.cost = 0
-        self.indexes = {}
-        for locale in self.locales:
+        self.localesIndexes = {}
+        for locale in locales:
+            randIndex = None
             if toRome:
                 randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "from") - 1)
-                self.flightsTime.append(self.flightsService.getFlightArrivalInMin(locale, randIndex))
-                self.cost += self.flightsService.getFlightCost(locale, randIndex, "from")
             else:
                 randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "to") - 1)
-                self.flightsTime.append(self.flightsService.getFlightDepartureInMin(locale, randIndex))
-                self.cost += self.flightsService.getFlightCost(locale, randIndex, "to")
 
-            self.indexes[locale] = randIndex
+            self.localesIndexes[locale] = randIndex
     
     def maxWaitingTime(self):
         return max(self.flightsTime) - min(self.flightsTime)
