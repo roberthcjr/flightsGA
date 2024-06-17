@@ -22,3 +22,6 @@ class Individual:
     def maxWaitingTime(self):
         return max(self.flightsTime) - min(self.flightsTime)
     
+    def fitness(self):
+        return self.cost + self.maxWaitingTime() * 10
+    

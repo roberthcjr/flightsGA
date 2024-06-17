@@ -1,17 +1,16 @@
+import random
 from gaProperties.individual import Individual
 
 class GA:
 
-    def __init__(self, flightService):
+    def __init__(self, flightService, kRatio):
         self.flightService = flightService
-
-    def fitness(self, individual):
-        return individual.cost + individual.maxWaitingTime() * 10
+        self.kRatio = kRatio
     
     def bestIndividual(self, population):
         best = population[0]
         for individual in population:
-            if self.fitness(individual) < self.fitness(best):
+            if individual.fitness() < best.fitness():
                 best = individual
         return best
     
