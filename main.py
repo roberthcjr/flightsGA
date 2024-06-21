@@ -6,7 +6,7 @@ def main():
     flightsService = Flights()
     locales = ["LIS", "MAD", "CDG", "DUB", "BRU", "LHR"]
     toRome = False
-    ga = GA(flightsService, 0.75, locales, toRome)
+    ga = GA(flightsService, locales, toRome, kRatio=0.75)
 
     print("Population created, with size of", len(ga.population))
 
