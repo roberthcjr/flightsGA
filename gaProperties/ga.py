@@ -4,23 +4,14 @@ from utils.splitter import splitDictBackward, splitDictFoward
 
 class GA:
 
-    def __init__(self, flightService, kRatio):
+    def __init__(self, flightService, kRatio, locales, toRome, size=100):
         self.flightService = flightService
         self.kRatio = kRatio
-        self.population = []
+        self.population = [Individual(self.flightService, locales, toRome) for _ in range(size)]
     
-    def bestIndividual(self, population):
-        populationSorted = sorted(population, key=lambda individual:individual.fitness())
-        return populationSorted[0]
-    
-    def createPopulation(self, locales, toRome, size=100):    
-        if not callable(Individual):
-            raise ValueError("`Individual` deve ser uma classe ou uma função que cria instâncias.")
-        
-        if not locales:
-            raise ValueError("O parâmetro `locales` não deve estar vazio.")
-        
-        self.population.append([Individual(self.flightService, locales, toRome) for _ in range(size)])
+    def bestIndividual(self):
+        self.population.sort(key=lambda individuo: individuo.fitness())
+        return self.population[0]
     
     def newPopulation(self, population):
         newPopulation = population[:]

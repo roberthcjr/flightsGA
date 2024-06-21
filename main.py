@@ -4,18 +4,15 @@ from utils.output import printResult
 
 def main():
     flightsService = Flights()
-    ga = GA(flightsService, 0.75)
-
     locales = ["LIS", "MAD", "CDG", "DUB", "BRU", "LHR"]
     toRome = False
+    ga = GA(flightsService, 0.75, locales, toRome)
 
-    population = ga.createPopulation(locales, toRome)
+    print("Population created, with size of", len(ga.population))
 
-    print("Population created, with size of", len(population))
+    bestIndividual = ga.bestIndividual()
 
-    bestIndividual = ga.bestIndividual(population)
-
-    printResult(flightsService, bestIndividual, toRome)
+    printResult(flightsService, bestIndividual)
         
 
 
