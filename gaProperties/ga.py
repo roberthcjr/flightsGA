@@ -16,6 +16,32 @@ class GA:
         self.population.sort(key=lambda individuo: individuo.fitness())
         self.bestIndividuals = self.population[:self.elitism]
     
+    def createPool(self):
+        competidors = self.population[self.elitism:]
+        pool = []
+        random.shuffle(competidors)
+        for index in range(0, len(competidors), 2):
+            competidor1 = competidors[index]
+            competidor2 = competidors[index+1]
+            pool.append(self.tournament(competidor1, competidor2))
+        return pool
+    
+    def crossOver(self, individualA:Individual, individualB:Individual):
+        crossOverPosition = random.randint(0, random.randint(1,len(individualA.localesIndexes)))
+        return {**splitDictBackward(individualB.localesIndexes, crossOverPosition), **splitDictFoward(individualA.localesIndexes, crossOverPosition)}
+    
+    def makeCrossOver(self, pool):
+        newBorns = []
+        crossOverPool = pool[:]
+        random.shuffle(crossOverPool)
+        for index in range(0, len(crossOverPool), 2):
+            father = crossOverPool[index]
+            mother = crossOverPool[index+1]
+            if(random.uniform(0,1) < self.crossOverRatio):
+                child = father
+                child.localesIndexes = self.crossOver(father, mother)
+                newBorns.append(child)
+        return newBorns
     def mutate(self, individual:Individual):
         locales = list(individual.localesIndexes.keys())
         randLocale = locales[random.randint(0, len(locales)-1)]
