@@ -1,12 +1,12 @@
-def splitDictFoward(dict, position):
-    items = list(dict.items())
+def splitDictFoward(dictionary, position):
+    items = list(dictionary.items())
 
     sub_items = items[position:]
 
     return dict(sub_items)
 
-def splitDictBackward(dict, position):
-    items = list(dict.items())
+def splitDictBackward(dictionary, position):
+    items = list(dictionary.items())
 
     sub_items = items[:position]
 
