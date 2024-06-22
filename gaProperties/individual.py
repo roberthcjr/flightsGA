@@ -1,11 +1,7 @@
 import random
 from utils.flightsService import Flights
 
-# TODO: need some repairs, this class doesn't work right now
 class Individual:
-    def __init (self, localesIndexes):
-        self.localesIndexes = localesIndexes
-
     def __init__ (self, flightsService:Flights, locales, toRome):
         self.flightsService = flightsService
         self.toRome = toRome
