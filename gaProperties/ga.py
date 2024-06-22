@@ -42,6 +42,7 @@ class GA:
                 child.localesIndexes = self.crossOver(father, mother)
                 newBorns.append(child)
         return newBorns
+    
     def mutate(self, individual:Individual):
         locales = list(individual.localesIndexes.keys())
         randLocale = locales[random.randint(0, len(locales)-1)]
@@ -63,6 +64,21 @@ class GA:
                 print("Ocorreu mutação")
                 self.population.remove(individual)
                 self.population.append(self.mutate(individual))
+
+    def newPopulation(self):
+        pool = self.createPool()
+        self.makeMutation(pool)
+
+        print(len(pool))
+
+        newPopulation = self.population[self.elitism:]
+        newPopulation = newPopulation + self.makeCrossOver(pool)
+        newPopulation.sort(key=lambda individuo: individuo.fitness())
+
+        self.population = newPopulation[:self.size]
+        newBestIndividuals = self.population[:self.elitism]
+        resultBestIndividuals = self.bestIndividuals + newBestIndividuals
+        self.bestIndividuals = sorted(resultBestIndividuals, key=lambda individuo: individuo.fitness())[:self.elitism]
 
     def tournament(self, competidor1, competidor2):
         winner = None
