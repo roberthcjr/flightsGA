@@ -12,14 +12,17 @@ class GA:
         self.toRome = toRome
         self.size = size
         self.elitism = elitism
-        self.population = [Individual(self.flightService, locales, toRome) for _ in range(size)]
+        self.population = [Individual(flightsService=self.flightService, locales=locales, toRome=toRome) for _ in range(size)]
         self.population.sort(key=lambda individuo: individuo.fitness())
-        self.bestIndividuals = self.population[:self.elitism]
     
+    def getBestIndividuals(self):
+        return self.population[:self.elitism]
+
     def createPool(self):
         competidors = self.population[self.elitism:]
         pool = []
         random.shuffle(competidors)
+        print(len(competidors))
         for index in range(0, len(competidors), 2):
             competidor1 = competidors[index]
             competidor2 = competidors[index+1]
@@ -38,9 +41,9 @@ class GA:
             father = crossOverPool[index]
             mother = crossOverPool[index+1]
             if(random.uniform(0,1) < self.crossOverRatio):
-                child = father
-                child.localesIndexes = self.crossOver(father, mother)
-                newBorns.append(child)
+                toRome = father.toRome
+                flightsService = father.flightsService
+                newBorns.append(Individual(l=self.crossOver(father, mother), toRome=toRome, flightsService=flightsService))
         return newBorns
     
     def mutate(self, individual:Individual):
@@ -57,11 +60,9 @@ class GA:
     
     def makeMutation(self, pool):
         mutationPool = pool[:]
-        while(len(mutationPool)):
-            individual = mutationPool[random.randint(0, len(mutationPool) - 1)]
-            mutationPool.remove(individual)
+        random.shuffle(mutationPool)
+        for individual in mutationPool:
             if(random.uniform(0,1) < self.mutationRatio):
-                print("Ocorreu mutação")
                 self.population.remove(individual)
                 self.population.append(self.mutate(individual))
 
@@ -69,22 +70,17 @@ class GA:
         pool = self.createPool()
         self.makeMutation(pool)
 
-        print(len(pool))
+        self.population += self.makeCrossOver(pool)
 
-        newPopulation = self.population[self.elitism:]
-        newPopulation = newPopulation + self.makeCrossOver(pool)
-        newPopulation.sort(key=lambda individuo: individuo.fitness())
+        self.population.sort(key=lambda individuo: individuo.fitness())
 
-        self.population = newPopulation[:self.size]
-        newBestIndividuals = self.population[:self.elitism]
-        resultBestIndividuals = self.bestIndividuals + newBestIndividuals
-        self.bestIndividuals = sorted(resultBestIndividuals, key=lambda individuo: individuo.fitness())[:self.elitism]
+        self.population = self.population[:self.size]
 
     def tournament(self, competidor1, competidor2):
         winner = None
         loser = None
 
-        if competidor1.fitness() > competidor2.fitness():
+        if competidor1.fitness() < competidor2.fitness():
             winner = competidor1
             loser = competidor2
         else:
