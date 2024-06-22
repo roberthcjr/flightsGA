@@ -2,18 +2,23 @@ import random
 from utils.flightsService import Flights
 
 class Individual:
-    def __init__ (self, flightsService:Flights, locales, toRome):
-        self.flightsService = flightsService
-        self.toRome = toRome
-        self.localesIndexes = {}
-        for locale in locales:
-            randIndex = None
-            if toRome:
-                randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "from") - 1)
-            else:
-                randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "to") - 1)
+    def __init__ (self, flightsService:Flights=None, locales=None, toRome=None, l=None):
+        if l == None:
+            self.flightsService = flightsService
+            self.toRome = toRome
+            self.localesIndexes = {}
+            for locale in locales:
+                randIndex = None
+                if toRome:
+                    randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "from") - 1)
+                else:
+                    randIndex = random.randint(0, self.flightsService.maxDFSize(locale, "to") - 1)
 
-            self.localesIndexes[locale] = randIndex
+                self.localesIndexes[locale] = randIndex
+        else:
+            self.localesIndexes = l
+            self.toRome = toRome
+            self.flightsService=flightsService
 
     def getFlightsTime(self):
         flights = []
