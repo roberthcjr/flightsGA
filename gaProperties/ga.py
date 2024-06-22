@@ -8,10 +8,8 @@ class GA:
         self.flightService = flightService
         self.kRatio = kRatio
         self.population = [Individual(self.flightService, locales, toRome) for _ in range(size)]
-    
-    def bestIndividual(self):
         self.population.sort(key=lambda individuo: individuo.fitness())
-        return self.population[0]
+        self.bestIndividuals = self.population[:self.elitism]
     
     def newPopulation(self, population):
         newPopulation = population[:]
