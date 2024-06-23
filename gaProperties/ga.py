@@ -1,3 +1,4 @@
+import copy
 import random
 from gaProperties.individual import Individual
 from utils.splitter import splitDictBackward, splitDictFoward
@@ -66,21 +67,28 @@ class GA:
     
     def makeMutation(self, pool):
         mutationPool = pool[:]
+        mutated = []
         random.shuffle(mutationPool)
         for individual in mutationPool:
             if(random.uniform(0,1) < self.mutationRatio):
-                self.population.remove(individual)
-                self.population.append(self.mutate(individual))
+                mutated.append(self.mutate(individual))
+
+        return mutated
 
     def newPopulation(self):
         pool = self.createPool()
-        self.makeMutation(pool)
 
-        self.population += self.makeCrossOver(pool)
+        mutated = self.makeMutation(pool)
 
-        self.population.sort(key=lambda individuo: individuo.fitness())
+        crossOver = self.makeCrossOver(pool)
 
-        self.population = self.population[:self.size]
+        elite = copy.deepcopy(self.population)[:self.elitism]
+
+        newElitePotential = elite + crossOver + mutated
+
+        newElite = sorted(newElitePotential, key=lambda individuo: individuo.fitness())[:self.elitism]
+
+        self.population = (newElite + self.population)[:self.size]
 
     def tournament(self, competidor1, competidor2):
         winner = None
