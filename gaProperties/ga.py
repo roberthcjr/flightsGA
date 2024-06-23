@@ -15,8 +15,14 @@ class GA:
         self.population = [Individual(flightsService=self.flightService, locales=locales, toRome=toRome) for _ in range(size)]
         self.population.sort(key=lambda individuo: individuo.fitness())
     
-    def getBestIndividuals(self):
-        return self.population[:self.elitism]
+    def getBestIndividual(self):
+        return self.population[0]
+    
+    def getMediumIndividual(self):
+        return self.population[49]
+    
+    def getWorstIndividual(self):
+        return self.population[99]
 
     def createPool(self):
         competidors = self.population[self.elitism:]
