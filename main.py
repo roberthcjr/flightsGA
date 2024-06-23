@@ -9,7 +9,7 @@ def runMultipleGas(quantity, toRome, kRatio, crossOverRatio, mutationRatio, genQ
     for i in range(quantity):
         print("GA:", i+1)
         results = runGa(toRome, kRatio, crossOverRatio, mutationRatio, genQuantity)
-        bestResult = results["bestResults"][0]
+        bestResult = sorted(results["bestResults"], key=lambda individuo: individuo.fitness())[0]
         bestResultsGACosts.append(bestResult.getTotalCost())
         bestResultsGAWaiting.append(bestResult.maxWaitingTime())
     return {
@@ -20,7 +20,6 @@ def runMultipleGas(quantity, toRome, kRatio, crossOverRatio, mutationRatio, genQ
 def runGa(toRome, kRatio, crossOverRatio, mutationRatio, genQuantity):
     flightsService = Flights()
     locales = ["LIS", "MAD", "CDG", "DUB", "BRU", "LHR"]
-    toRome = True
     ga = GA(flightService=flightsService, locales=locales, toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, elitism=4)
 
     bestIndividual = ga.getBestIndividual()
@@ -51,14 +50,14 @@ def runGa(toRome, kRatio, crossOverRatio, mutationRatio, genQuantity):
 
 
 def main():
-    toRome = True
+    toRome = False
     kRatio = 0.65
     crossOverRatio = 0.8
     mutationRatio = 0.25
-    genQuantity = 100
-    # results = runGa(toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
-    # plotGraph(results=results)
-    results = runMultipleGas(quantity=30, toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
-    plotGraph(results=results, isPoint=True)
+    genQuantity = 200
+    results = runGa(toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
+    plotGraph(results=results)
+    # results = runMultipleGas(quantity=30, toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
+    # plotGraph(results=results, isPoint=True)
 if __name__ == "__main__":
     main()
