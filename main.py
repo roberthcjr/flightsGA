@@ -1,51 +1,64 @@
-import matplotlib.pyplot
-plt = matplotlib.pyplot
-
+import copy
 from utils.flightsService import Flights
 from gaProperties.ga import GA
-from utils.output import printResult
+from utils.output import printResult, csv, plotGraph
 
-def main():
+def runMultipleGas(quantity, toRome, kRatio, crossOverRatio, mutationRatio, genQuantity):
+    bestResultsGACosts = []
+    bestResultsGAWaiting = []
+    for i in range(quantity):
+        print("GA:", i+1)
+        results = runGa(toRome, kRatio, crossOverRatio, mutationRatio, genQuantity)
+        bestResult = results["bestResults"][0]
+        bestResultsGACosts.append(bestResult.getTotalCost())
+        bestResultsGAWaiting.append(bestResult.maxWaitingTime())
+    return {
+        "bestResultsGACosts": bestResultsGACosts,
+        "bestResultsGAWaiting": bestResultsGAWaiting
+    }
+    
+def runGa(toRome, kRatio, crossOverRatio, mutationRatio, genQuantity):
     flightsService = Flights()
     locales = ["LIS", "MAD", "CDG", "DUB", "BRU", "LHR"]
     toRome = True
-    ga = GA(flightService=flightsService, locales=locales, toRome=toRome, kRatio=0.75, crossOverRatio=0.8, mutationRatio=0.10, elitism=4)
+    ga = GA(flightService=flightsService, locales=locales, toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, elitism=4)
 
-    print("Population created, with size of", len(ga.population))
-
-    bestIndividuals = ga.getBestIndividuals()
-    print("Melhor Indivíduo inicial tem custo:", bestIndividuals[0].getTotalCost(), "e fitness", bestIndividuals[0].fitness())
-
-    genQuantity = 100
+    bestIndividual = ga.getBestIndividual()
+    print("Melhor Indivíduo inicial tem custo:", bestIndividual.getTotalCost(), "e fitness", bestIndividual.fitness())
 
     bestResults = []
     mediumResults = []
     worstResults = []
-    x = list(range(1, genQuantity+1))
 
     for i in range(genQuantity):
-        print("Geração", i)
-        print("Melhor fitness: ", ga.getBestIndividuals()[0].fitness())
-        bestResults.append(ga.population[0].fitness())
-        mediumResults.append(ga.population[49].fitness())
-        worstResults.append(ga.population[99].fitness())
+        print("Geração", i+1)
+        print("Melhor fitness: ", ga.getBestIndividual().fitness())
+        bestResults.append(copy.deepcopy(ga.getBestIndividual()))
+        mediumResults.append(copy.deepcopy(ga.getMediumIndividual()))
+        worstResults.append(copy.deepcopy(ga.getWorstIndividual()))
         ga.newPopulation()
         print("Finalizada")
 
-    plt.plot(x, bestResults, label = "Melhor Resultado") 
-    plt.plot(x, mediumResults, label = "Médio Resultado") 
-    plt.plot(x, worstResults, label = "Pior Resultado") 
-    plt.legend() 
-    plt.show()
-
-    for i in range(20):
-        print(ga.population[i].fitness())
-
-    bestIndividual = ga.getBestIndividuals()[0]
+    bestIndividual = ga.getBestIndividual()
     print("Melhor Indivíduo final tem custo:", bestIndividual.getTotalCost(), "e fitness", bestIndividual.fitness())
     printResult(flightsService, bestIndividual)
-        
+
+    return {
+        "bestResults": bestResults,
+        "mediumResults": mediumResults,
+        "worstResults": worstResults
+    }
 
 
+def main():
+    toRome = True
+    kRatio = 0.65
+    crossOverRatio = 0.8
+    mutationRatio = 0.25
+    genQuantity = 100
+    # results = runGa(toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
+    # plotGraph(results=results)
+    results = runMultipleGas(quantity=30, toRome=toRome, kRatio=kRatio, crossOverRatio=crossOverRatio, mutationRatio=mutationRatio, genQuantity=genQuantity)
+    plotGraph(results=results, isPoint=True)
 if __name__ == "__main__":
     main()
