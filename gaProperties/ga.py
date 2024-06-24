@@ -56,7 +56,7 @@ class GA:
     def mutate(self, individual:Individual):
         locales = list(individual.localesIndexes.keys())
         randLocale = locales[random.randint(0, len(locales)-1)]
-        mutatedIndividual = individual
+        mutatedIndividual = copy.deepcopy(individual)
         randIndex = None
         if(self.toRome):
             randIndex = random.randint(0, self.flightService.maxDFSize(randLocale, "from") - 1)
