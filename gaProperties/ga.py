@@ -82,13 +82,13 @@ class GA:
 
         crossOver = self.makeCrossOver(pool)
 
-        elite = copy.deepcopy(self.population)[:self.elitism]
+        elite = copy.deepcopy(self.population[:self.elitism])
 
         newElitePotential = elite + crossOver + mutated
 
-        newElite = sorted(newElitePotential, key=lambda individuo: individuo.fitness())[:self.elitism]
+        newElite = copy.deepcopy(sorted(newElitePotential, key=lambda individuo: individuo.fitness())[:self.elitism])
 
-        self.population = (newElite + self.population)[:self.size]
+        self.population = (newElite + elite + crossOver + mutated + self.population)[:self.size]
 
     def tournament(self, competidor1, competidor2):
         winner = None
