@@ -29,7 +29,6 @@ class GA:
         competidors = self.population[self.elitism:]
         pool = []
         random.shuffle(competidors)
-        print(len(competidors))
         for index in range(0, len(competidors), 2):
             competidor1 = competidors[index]
             competidor2 = competidors[index+1]
